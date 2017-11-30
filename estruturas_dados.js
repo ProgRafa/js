@@ -16,6 +16,7 @@ var BinaryTree = function(){
             else
                 root.right = root.addNodo(value, root.right); 
         }
+        this.calcularNivel()
         return root; 
     }
     nodo.prototype.showTree = function(spc = 0, root = this){
@@ -25,10 +26,10 @@ var BinaryTree = function(){
             space += '  ';
 
         if(!root){
-            console.log(space+'null');
+            console.log(space+'Nível '+sp+" -> (null)");
         }else{
             //printa nodo e acresce tabulação 
-            console.log(space+'Nodo('+root.value+')');
+            console.log(space+'Nível '+sp+' -> ('+root.value+')');
             sp++;
             //percorre árvore pela direita
             root.showTree(sp, root.right);    
@@ -112,44 +113,107 @@ var BinaryTree = function(){
 
         return temp;
     }
-    nodo.prototype.AVL = function(){
+    nodo.prototype.AVL = function(root = this){
+        if(root.left)
+            root.left = this.AVL(root.left);
+        if(root.right)
+            root.right = this.AVL(root.right);
 
+        if(root.profundidade >= 2 && root.right.profundidade >= 1){
+            root = this.simpleToLeftRotation(root);
+            //Recalcular o nível da árvore
+        }else if(root.profundidade <= -2 && root.left.profundidade <= -1){
+            root = this.simpleToRightRotation(root);
+        }
+
+        return root;
+    }
+    nodo.prototype.simpleToLeftRotation = function(root){
+        var temp = root;
+        root = root.right;
+        temp.right = root.left;
+        root.left = temp;
+    
+        return root;
+    }
+    nodo.prototype.simpleToRightRotation = function(){
+        var temp = root;
+        root = root.left;
+        temp.left = root.right;
+        root.right = temp;
+    
+        return root;
+    }
+    nodo.prototype.calcularNivel = function(root = this){
+        root.profundidade = this.dir(root.right) - this.esq(root.left);
+
+        if(root.left)
+            this.calcularNivel(root.left);
+        if(root.right)
+            this.calcularNivel(root.right);
+    }
+    nodo.prototype.esq = function(root){
+        var esq = 0;
+        if(!root){
+            return 0;
+        }else{
+            var esq = this.esq(root.left);
+            return esq+1;
+        }
+    };
+    nodo.prototype.dir = function(root){
+        var dir = 0;
+        if(!root)
+            return 0;
+        else{
+            dir = this.dir(root.right);
+            return dir+1;
+        }
     }
     return nodo;
 }();
 
 var root = new BinaryTree(10, null, null);
-root.addNodo(5, root);
-root.addNodo(15, root);
-root.addNodo(13, root);
-root.addNodo(18, root);
-root.addNodo(2, root);
-root.addNodo(14, root);
-root.addNodo(12, root);
-root.addNodo(17, root);
-root.addNodo(19, root);
-root.addNodo(6, root);
+// root.addNodo(5, root);
+// root.addNodo(15, root);
+// root.addNodo(13, root);
+// root.addNodo(18, root);
+// root.addNodo(2, root);
+// root.addNodo(14, root);
+// root.addNodo(12, root);
+// root.addNodo(17, root);
+// root.addNodo(19, root);
+// root.addNodo(6, root);
+// root.addNodo(9, root);
+// root.addNodo(7, root);
+// root.addNodo(1, root);
+// root.addNodo(3, root);
+
+// root.addNodo(12, root);
+// root.addNodo(13, root);
+// root.addNodo(14, root);
+root.addNodo(8, root);
 root.addNodo(9, root);
 root.addNodo(7, root);
-root.addNodo(1, root);
-root.addNodo(3, root);
+console.log(root.profundidade);
 
+// try{
+//     root.showTree();
+// }catch(err){
+//     console.log(typeof root);
+//     console.log(root)
+//     console.log("Árvore vazia");
+// }
+// root = root.removeNodo(root.search(10));
+// console.log("------------REMOÇÃO-----------------")
+// try{
+//     root.showTree();
+// }catch(err){
+//     console.log(typeof root);
+//     console.log(root)
+//     console.log("Árvore vazia");
+// }
+//root.showTree();
 
-
-
-try{
-    root.showTree();
-}catch(err){
-    console.log(typeof root);
-    console.log(root)
-    console.log("Árvore vazia");
-}
-root = root.removeNodo(root.search(10));
-console.log("------------REMOÇÃO-----------------")
-try{
-    root.showTree();
-}catch(err){
-    console.log(typeof root);
-    console.log(root)
-    console.log("Árvore vazia");
-}
+// root = root.AVL();
+// root.showTree();
